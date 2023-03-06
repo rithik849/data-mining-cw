@@ -93,3 +93,10 @@ def dt_predict(X_train,y_train):
 def dt_error_rate(y_pred, y_true):
 	equivalance = (y_pred == y_true)
 	return 1 - (sum(equivalance)/float(len(y_true)))
+
+df = read_csv_1("adult.csv")
+df = data_frame_without_missing_values(df)
+X_train = one_hot_encoding(df)
+y_train = label_encoding(df)
+pred = dt_predict(X_train,y_train)
+print(dt_error_rate(pred,y_train))

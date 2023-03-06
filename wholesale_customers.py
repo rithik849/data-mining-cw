@@ -1,6 +1,5 @@
 import pandas as pd
 from pandas.core.frame import DataFrame
-from scipy.sparse.construct import rand
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
@@ -59,6 +58,8 @@ def agglomerative(df, k):
 
 # Given a data set X and an assignment to clusters y
 # return the Solhouette score of the clustering.
+# Silhouetter score measures how good a cluster seperation is
+# Measured as average distance of datapoint to all other points in cluster(A) - average distance of datapoint to all other points in nearest (not including current datapoint) cluster (B) / max(A,B)
 def clustering_score(X,y):
 	return silhouette_score(X,y)
 
@@ -80,6 +81,7 @@ def cluster_evaluation(df):
 		for j in ["Kmeans","Agglomerative"]:
 			for k in [3,5,10]:
 				if j=="Kmeans":
+                    # Repeat k-means 10 times to account for randomness of initial points
 					for l in range(10):
 						result = kmeans(dataset,k)
 						score = clustering_score(dataset,result)
@@ -99,27 +101,33 @@ def best_clustering_score(rdf):
 # Run some clustering algorithm of your choice with k=3 and generate a scatter plot for each pair of attributes.
 # Data points in different clusters should appear with different colors.
 def scatter_plots(df):
-	plt.rcParams["figure.figsize"] = (10, 9)
-	k=3
-	combinations = []
-	colNo = len(df.columns)
-	df = standardize(df)
-	fig,axes = plt.subplots(nrows=5,ncols=3)
-	evaluation = cluster_evaluation(df)
-	# alg=Kmeans data=Original k=3 score=0.477018
-	best = evaluation.iloc[evaluation['Silhouette Score'].argmax()]
-	counter = 0
-	for i in range(colNo-1):
-		for j in range(i+1,colNo):
-			combinations.append([df.columns[i],df.columns[j]])
-			sub_df = pd.DataFrame([df[df.columns[i]],df[df.columns[j]]]).transpose()
-			dataset = sub_df if best['data']=='Original' else standardize(sub_df)
-			labels = agglomerative(dataset,k) if best['Algorithm']=='Agglomerative' else kmeans(dataset,k)
-			dataset['cl'] = labels
-			
-			ax = dataset.plot(x=df.columns[i],y=df.columns[j],ax=axes[counter%5,counter//5],kind='scatter',c='cl',colormap='gist_rainbow')
-			ax.set_xlabel(df.columns[i])
-			ax.set_ylabel(df.columns[j])
-			counter += 1
-	plt.subplots_adjust(hspace=0.5)
-	plt.savefig("scatter.png")
+    plt.rcParams["figure.figsize"] = (10, 9)
+    k=3
+    combinations = []
+    colNo = len(df.columns)
+    df = standardize(df)
+    fig,axes = plt.subplots(nrows=5,ncols=3)
+    evaluation = cluster_evaluation(df)
+    # alg=Kmeans data=Original k=3 score=0.477018
+    best = evaluation.iloc[evaluation['Silhouette Score'].argmax()]
+    counter = 0
+    for i in range(colNo-1):
+        for j in range(i+1,colNo):
+            # Create subsets of 2 fields
+            combinations.append([df.columns[i],df.columns[j]])
+            sub_df = pd.DataFrame([df[df.columns[i]],df[df.columns[j]]]).transpose()
+            
+            dataset = sub_df if best['data'] == 'Original' else standardize(sub_df)
+            labels = agglomerative(dataset,k) if best['Algorithm'] == 'Agglomerative' else kmeans(dataset,k)
+            dataset['cl'] = labels
+
+            ax = dataset.plot(x=df.columns[i],y=df.columns[j],ax = axes[counter%5][counter//5],kind='scatter',c='cl',colormap='gist_rainbow')
+            ax.set_xlabel(df.columns[i])
+            ax.set_ylabel(df.columns[j])
+            counter += 1
+    plt.subplots_adjust(hspace=0.5)
+    plt.savefig("scatter.png")
+ 
+
+a = read_csv_2("wholesale_customers.csv")
+scatter_plots(a)
