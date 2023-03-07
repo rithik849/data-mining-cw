@@ -1,6 +1,4 @@
-from numpy.lib.function_base import trim_zeros
 import pandas as pd
-import re
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk import PorterStemmer
@@ -10,7 +8,6 @@ import matplotlib.pyplot as plt
 import time
 import requests
 import numpy as np
-import math
 # Part 3: Mining text data.
 
 # Return a pandas dataframe containing the data set.
@@ -129,6 +126,7 @@ def stemming(tdf):
 # as a 1d array (numpy.ndarray). 
 def mnb_predict(df):
 	s = time.time()
+	# Remove unnecessary characters and stop words that do not provide value to determining the output
 	lower_case(df)
 	remove_non_alphabetic_chars(df)
 	remove_multiple_consecutive_whitespaces(df)
@@ -146,6 +144,7 @@ def mnb_predict(df):
 	vectorized = CountVectorizer(analyzer='word')
 	# Hyper-params
 	vectorized.ngram_range=(1,4)
+	# Document term frequency min and max range
 	vectorized.min_df = 1
 	vectorized.max_df = 300
 
