@@ -22,7 +22,6 @@ We evaluate the performance of the splits by using the silhouette score metric. 
 
 # Coronavirus Tweets
 
-Link : https://www.kaggle.com/
-datatattle/covid-19-nlp-text-classification
+Link : https://www.kaggle.com/datatattle/covid-19-nlp-text-classification
 
 This dataset holds the details of various tweets and the sentiment of each tweet. The end result of processing the dataset is creating a Naive Bayesian Classifier to determine the sentiment of tweets. We remove stop words and clean the tweets by removing additional whitespaces and non-alphanumeric characters. The data is then stemmed and passed through a CountVectorizer which creates a document-term matrix. The data is then passed to a Multinomial Naive Bayesian Model that forms a prediction.
